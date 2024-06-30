@@ -90,66 +90,67 @@ export async function PATCH(request: Request): Promise<Response> {
     try {
         await connect();
 
-        const body = await request.json();
+        const params = new URL(request.url).searchParams;
+        const id = params.get("id");
 
-        // Safety checks
-        if (!body.day || !body.timeSlot || !body.name) {
+        if (!id) {
             return new Response(JSON.stringify({
                 success: false,
                 data: null,
-                error: "Invalid Request Body",
+                error: "Invalid Request URL",
             }), { status: 400 });
         }
 
-        const newName = body?.newName || body.name;
+        const body = await request.json();
 
-        // Check if an entry with the same name, day, and timeSlot already exists
-        if (body.name !== newName) {
-            const existingEntry = await Menu.findOne({
-                day: body.day,
-                timeSlot: body.timeSlot,
-                name: newName,
-            });
-
-            if (existingEntry) {
-                return Response.json({
-                    success: false,
-                    data: null,
-                    error: `Menu with name '${newName}' already exists for ${body.day} at ${body.timeSlot}.`,
-                }, { status: 400 });
-            }
-        }
-        let toBeUpdated: { [key: string]: string } = {
-            name: newName,
-        };
-        if (body.imgURL) {
-            toBeUpdated.imgURL = body.imgURL;
-        }
-
-        // Update the entry if no duplicate is found
-        const updatedMenu = await Menu.findOneAndUpdate(
-            {
-                day: body.day,
-                timeSlot: body.timeSlot,
-                name: body.name,
-            },
-            toBeUpdated,
-            { new: true }
-        );
-
-        if (!updatedMenu) {
-            return Response.json({
+        // Safety checks
+        if (!body.imgURL && !body.name) {
+            return new Response(JSON.stringify({
                 success: false,
                 data: null,
-                error: "Update failed. Menu not found.",
-            }, { status: 404 });
+                error: "Invalid Request Body - No fields to update.",
+            }), { status: 400 });
         }
 
-        return Response.json({
+        const newName = body.name;
+        const newImgURL = body.imgURL;
+
+        const findItem = await Menu.findById(id);
+
+        if (!findItem) {
+            return new Response(JSON.stringify({
+                success: false,
+                data: null,
+                error: "Menu not found",
+            }), { status: 404 });
+        }
+
+        // check if there is an entry with the same name on same timeSlot, and day
+        const existingEntry = await Menu.findOne({
+            day: findItem.day,
+            timeSlot: findItem.timeSlot,
+            name: newName,
+        });
+
+        if (existingEntry) {
+            return new Response(JSON.stringify({
+                success: false,
+                data: null,
+                error: `Menu item with name '${newName}' already exists for ${findItem.day} at ${findItem.timeSlot}.`,
+            }), { status: 400 });
+        }
+
+        if(newName) findItem.name = newName;
+        if(newImgURL) findItem.imgURL = newImgURL;
+
+        await findItem.save();
+
+        return new Response(JSON.stringify({
             success: true,
-            data: updatedMenu,
+            data: findItem,
             error: null,
-        }, { status: 200 });
+        }), { status: 200 });
+
     } catch (error) {
         return Response.json({
             success: false,
@@ -163,22 +164,18 @@ export async function DELETE(request: Request): Promise<Response> {
     try {
         await connect();
 
-        const body = await request.json();
+        const params = new URL(request.url).searchParams;
+        const id = params.get("id");
 
-        // Safety checks
-        if (!body.day || !body.timeSlot || !body.name) {
+        if (!id) {
             return Response.json({
                 success: false,
                 data: null,
-                error: "Invalid Request Body",
+                error: "Invalid Request URL",
             }, { status: 400 });
         }
 
-        const deletedMenu = await Menu.findOneAndDelete({
-            day: body.day,
-            timeSlot: body.timeSlot,
-            name: body.name,
-        });
+        const deletedMenu = await Menu.findByIdAndDelete(id);
 
         if (!deletedMenu) {
             return Response.json({
@@ -193,6 +190,7 @@ export async function DELETE(request: Request): Promise<Response> {
             data: deletedMenu,
             error: null,
         }, { status: 200 });
+
     } catch (error) {
         return Response.json({
             success: false,
