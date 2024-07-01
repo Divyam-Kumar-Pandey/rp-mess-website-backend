@@ -17,3 +17,7 @@ const HallMemberSchema = new Schema({
         default: Date.now,
     },
 });
+
+const HallMember = models.HallMember || model('HallMember', HallMemberSchema);
+
+export default HallMember;
