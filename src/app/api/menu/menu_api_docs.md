@@ -7,7 +7,7 @@ Get the menu for the day and time slot. If `day` and `timeSlot` are not provided
 ### Request
 
 - Method: GET
-- URL: `/api/mess/menu`
+- URL: `/api/menu`
 - Headers:
   - Authorization: Bearer `<secret_key>`
 - Params:
@@ -72,7 +72,7 @@ Add a new menu item.
 ### Request
 
 - Method: POST
-- URL: `/api/mess/menu`
+- URL: `/api/menu`
 - Headers:
   - Authorization: Bearer `<secret_key>`
 - Body:
@@ -111,7 +111,7 @@ Update an existing menu item.
 ### Request
 
 - Method: PATCH
-- URL: `/api/mess/menu?id=<menu_item_id>`
+- URL: `/api/menu?id=<menu_item_id>`
 - Headers:
   - Authorization: Bearer `<secret_key>`
 - Params:
@@ -152,7 +152,7 @@ Delete a menu item.
 ### Request
 
 - Method: DELETE
-- URL: `/api/mess/menu?id=<menu_item_id>`
+- URL: `/api/menu?id=<menu_item_id>`
 - Headers:
   - Authorization: Bearer `<secret_key>`
 - Params:
