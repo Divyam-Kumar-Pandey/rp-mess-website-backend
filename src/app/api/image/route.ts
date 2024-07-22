@@ -66,3 +66,18 @@
 //         }), { status: 500 });
 //     }
 // }
+
+// create a sample api
+
+export async function POST(request: Request): Promise<Response> {
+    const formData = await request.formData();
+    const image = formData.get('image') as File;
+    console.log(image.size);
+    return new Response(JSON.stringify({
+        success: true,
+        data: {
+            imgUrl: 'https://drive.google.com/uc?id=1ZiJm7JGyZ9b5jR3s7JQ1gjZ9FwWjFy4z&export=view',
+        },
+        error: null,
+    }), { status: 200 });
+}
