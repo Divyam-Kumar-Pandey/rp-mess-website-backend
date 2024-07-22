@@ -19,7 +19,7 @@ export async function GET(request: Request): Promise<Response> {
         return Response.json({
             "success": false,
             "data": null,
-            "error": "Error connecting to MongoDB",
+            "error": "Error connecting to MongoDB", 
         });
     }
 }
