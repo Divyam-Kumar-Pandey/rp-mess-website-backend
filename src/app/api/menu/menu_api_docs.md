@@ -73,6 +73,7 @@ Add a new menu item.
 ### Request
 
 - Method: POST
+- Can be accessed by ADMIN and SUPER ADMIN
 - URL: `/api/menu`
 - Headers:
   - Authorization: Bearer `<access_token>`
@@ -112,6 +113,7 @@ Update an existing menu item.
 ### Request
 
 - Method: PATCH
+- Can be accessed by ADMIN and SUPER ADMIN
 - URL: `/api/menu?id=<menu_item_id>`
 - Headers:
   - Authorization: Bearer `<access_token>`
@@ -153,6 +155,7 @@ Delete a menu item.
 ### Request
 
 - Method: DELETE
+- Can be accessed by ADMIN and SUPER ADMIN
 - URL: `/api/menu?id=<menu_item_id>`
 - Headers:
   - Authorization: Bearer `<access_token>`

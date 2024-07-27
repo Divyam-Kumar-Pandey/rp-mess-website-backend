@@ -1,12 +1,17 @@
-import { ERROR_RESPONSE, SALT_ROUNDS, SUCCESS_RESPONSE } from "@/app/constants";
+import { ERROR_RESPONSE, SALT_ROUNDS, SUCCESS_RESPONSE, UNAUTHORISED_RESPONSE } from "@/app/constants";
 import connect from "@/lib/db";
 import User from "@/lib/models/user";
+import { isAuthorizedAsAnyOfThem } from "@/lib/services/auth";
 var bcrypt = require('bcrypt');
 
 
 
 export async function POST(req: Request) {
-    const token = req.headers.get("Authorization")?.split("Bearer ")[1];
+    const token = req.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    if (!auth.success) { 
+        return UNAUTHORISED_RESPONSE;
+    }
     /* 
         Sample Request Body {
             "rollNumber": "123456",

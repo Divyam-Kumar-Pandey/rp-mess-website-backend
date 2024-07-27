@@ -12,12 +12,15 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     const params = new URL(request.url).searchParams;
-    const rollNumber = params.get("rollNumber");
+    const rollNumber = params.get("rollNumber")?.toUpperCase()
     try {
         await connect();
         let hallMembers;
         if(rollNumber) hallMembers = await HallMember.find({rollNumber});
         else hallMembers = await HallMember.find();
+
+        // put in an array
+        hallMembers = hallMembers.map(hallMember => hallMember.toJSON());
         
         return SUCCESS_RESPONSE(hallMembers, 200);
     } catch (error) {

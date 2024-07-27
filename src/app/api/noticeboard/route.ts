@@ -1,7 +1,7 @@
 import { ERROR_RESPONSE, SUCCESS_RESPONSE, UNAUTHORISED_RESPONSE } from "@/app/constants";
 import connect from "@/lib/db";
 import { isAuthorizedAsAnyOfThem } from "@/lib/services/auth";
-import Notification from "@/lib/models/notification";
+import NoticeBoard from "@/lib/models/noticeBoard";
 
 
 export async function GET(request: Request): Promise<Response> {
@@ -17,7 +17,9 @@ export async function GET(request: Request): Promise<Response> {
 
     try {
         await connect();
-        const notifications = await Notification.find().sort({createdAt: -1}).limit(limit);
+        let notifications = await NoticeBoard.find().sort({createdAt: -1}).limit(limit);
+        // make it an array
+        notifications = notifications.map(notification => notification.toJSON());
         return SUCCESS_RESPONSE(notifications, 200);
     } catch (error) {
         return ERROR_RESPONSE(error, 500);
@@ -45,7 +47,7 @@ export async function POST(request: Request): Promise<Response> {
     }
     try {
         await connect();
-        const notification = new Notification({title: body.title, body: body.body, imgURL: (body.imgURL)??''});
+        const notification = new NoticeBoard({title: body.title, body: body.body, imgURL: (body.imgURL)??''});
         await notification.save();
         return SUCCESS_RESPONSE("Notification added successfully", 200);
     } catch (error) {

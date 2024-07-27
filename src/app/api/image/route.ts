@@ -44,6 +44,7 @@ async function uploadFile(authClient : any, image: File){
 }
 
 export async function POST(request: Request): Promise<Response> {
+
     const formData = await request.formData();
     const image = formData.get('image') as File;
     console.log(image.size);
