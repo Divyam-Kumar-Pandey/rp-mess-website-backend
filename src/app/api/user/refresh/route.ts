@@ -3,7 +3,7 @@ import generateTokens from "@/lib/services/generateTokens";
 var jwt = require('jsonwebtoken');
 
 
-export default async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
     /* 
         Must contain Authorization header with the refresh token
     */

@@ -5,7 +5,7 @@ var bcrypt = require('bcrypt');
 
 
 
-export default async function POST(req: Request) {
+export async function POST(req: Request) {
     const token = req.headers.get("Authorization")?.split("Bearer ")[1];
     /* 
         Sample Request Body {

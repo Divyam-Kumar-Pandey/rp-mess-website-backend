@@ -30,16 +30,16 @@ export async function POST(request: Request): Promise<Response> {
 
     // send email
 
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: false,
-        auth: {
-            user: 'divyamkumarp@gmail.com',
-            pass: 'vrcp utkz xwnv hxgr'
-        }
-    });
+    // var transporter = nodemailer.createTransport({
+    //     service: 'gmail',
+    //     host: 'smtp.gmail.com',
+    //     port: 465,
+    //     secure: false,
+    //     auth: {
+    //         user: 'divyamkumarp@gmail.com',
+    //         pass: ''
+    //     }
+    // });
 
     var mailOptions = {
       from: 'divyamkumarp@gmail.com',
@@ -48,13 +48,13 @@ export async function POST(request: Request): Promise<Response> {
       text: 'That was easy! Your verification code is ' + verificationCode
     };
 
-    await transporter.sendMail(mailOptions, await function(error: any, info: any){
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
+    // await transporter.sendMail(mailOptions, await function(error: any, info: any){
+    //   if (error) {
+    //     console.log(error);
+    //   } else {
+    //     console.log('Email sent: ' + info.response);
+    //   }
+    // });
 
     return SUCCESS_RESPONSE("Email sent successfully...", 200);
 

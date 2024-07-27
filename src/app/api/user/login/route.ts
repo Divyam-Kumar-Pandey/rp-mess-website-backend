@@ -1,10 +1,7 @@
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from "@/app/constants";
 import connect from "@/lib/db";
 import User from "@/lib/models/user";
 import generateTokens from "@/lib/services/generateTokens";
 var bcrypt = require('bcrypt');
-var jwt = require('jsonwebtoken');
-
 
 
 export async function POST(req: Request) {
