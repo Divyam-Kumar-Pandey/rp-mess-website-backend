@@ -2,19 +2,53 @@ import { profile } from 'console';
 import {Schema, model, models} from 'mongoose';
 
 const UserSchema = new Schema({
+    // required fields
+    // roll number, password, name, email, isEmailVerified, isProfileComplete, role
     rollNumber: {
         type: String,
         required: true,
         unique: true,
     },
+    //password
     password: {
         type: String,
         required: true,
     },
+    forgotPasswordOTP: {
+        type: String,
+        required: false,
+    },
+    forgotPasswordOTPExpires: {
+        type: Date,
+        required: false,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    // email
     email: {
         type: String,
         required: true,
         unique: true,
+    },
+    isEmailVerified: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    emailOTP: {
+        type: String,
+        required: false,
+    },
+    emailOTPExpires: {
+        type: Date,
+        required: false,
+    },
+    // additional details
+    position : {
+        type: String,
+        required: false,
     },
     roomNumber: {
         type: String,
@@ -35,7 +69,7 @@ const UserSchema = new Schema({
     },
 
     role: {
-        type: String,
+        type: [String],
         required: true,
         enum: ['ADMIN', 'STUDENT', 'STAFF', 'SUPERADMIN'],
         default: 'STUDENT',

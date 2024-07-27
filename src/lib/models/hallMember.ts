@@ -8,6 +8,7 @@ const HallMemberSchema = new Schema({
     },
     role: {
         type: String,
+        // kept as string for simplicity, so that we don't need to make array while uploading new CSVs
         required: true,
         enum: ['ADMIN', 'STUDENT', 'STAFF', 'SUPERADMIN'],
         default: 'STUDENT',

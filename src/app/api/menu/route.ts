@@ -1,7 +1,16 @@
+import { ERROR_RESPONSE, SUCCESS_RESPONSE, UNAUTHORISED_RESPONSE } from "@/app/constants";
 import connect from "@/lib/db";
 import Menu from "@/lib/models/menu";
+import { isAuthorizedAsAnyOfThem } from "@/lib/services/auth";
 
 export async function GET(request: Request): Promise<Response> {
+
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ['STUDENT', 'STAFF', 'ADMIN', 'SUPERADMIN']);
+    if (!auth.success) {
+        return UNAUTHORISED_RESPONSE;
+    }
+
     const params = new URL(request.url).searchParams;
     const day = params.get("day");
     const timeSlot = params.get("timeSlot");
@@ -12,28 +21,23 @@ export async function GET(request: Request): Promise<Response> {
             let filteredMenu = menu;
             if(day) filteredMenu = filteredMenu.filter((item) => item.day === day);
             if(timeSlot) filteredMenu = filteredMenu.filter((item) => item.timeSlot === timeSlot);
-            return Response.json({
-                "success": true,
-                "data": filteredMenu,
-                "error": null,
-            });
+            return SUCCESS_RESPONSE(filteredMenu, 200);
         }
 
-        return Response.json({
-            "success": true,
-            "data": menu,
-            "error": null,
-        });
+        return SUCCESS_RESPONSE(menu, 200);
     } catch (error) {
-        return Response.json({
-            "success": false,
-            "data": null,
-            "error": "Error connecting to MongoDB",
-        });
+        return ERROR_RESPONSE(error, 500);
     }
 }
 
 export async function POST(request: Request): Promise<Response> {
+
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    if (!auth.success) {
+        return UNAUTHORISED_RESPONSE;
+    }
+
     try {
         await connect();
 
@@ -50,11 +54,7 @@ export async function POST(request: Request): Promise<Response> {
 
         //safety checks
         if (!body.day || !body.timeSlot || !body.name) {
-            return Response.json({
-                "success": false,
-                "data": null,
-                "error": "Invalid Request Body",
-            });
+            return ERROR_RESPONSE("Invalid Request Body. Required fields: day, timeSlot, name", 400);
         }
 
 
@@ -64,29 +64,24 @@ export async function POST(request: Request): Promise<Response> {
         const existingMenu = await Menu.findOne({ day: body.day, timeSlot: body.timeSlot, name: body.name });
 
         if (existingMenu) {
-            return Response.json({
-                "success": false,
-                "data": null,
-                "error": "Menu already exists",
-            });
+            return ERROR_RESPONSE(`Menu item with name '${body.name}' already exists for ${body.day} at ${body.timeSlot}.`, 400);
         }
 
         await newMenu.save();
-        return Response.json({
-            "success": true,
-            "data": newMenu,
-            "error": null,
-        });
+        return SUCCESS_RESPONSE(newMenu, 201);
     } catch (error) {
-        return Response.json({
-            "success": false,
-            "data": null,
-            "error": error,
-        });
+        return ERROR_RESPONSE(error, 500);
     }
 }
 
 export async function PATCH(request: Request): Promise<Response> {
+
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    if (!auth.success) {
+        return UNAUTHORISED_RESPONSE;
+    }
+
     try {
         await connect();
 
@@ -94,22 +89,14 @@ export async function PATCH(request: Request): Promise<Response> {
         const id = params.get("id");
 
         if (!id) {
-            return new Response(JSON.stringify({
-                success: false,
-                data: null,
-                error: "Invalid Request URL",
-            }), { status: 400 });
+            return ERROR_RESPONSE("Invalid Request URL", 400);
         }
 
         const body = await request.json();
 
         // Safety checks
         if (!body.imgURL && !body.name) {
-            return new Response(JSON.stringify({
-                success: false,
-                data: null,
-                error: "Invalid Request Body - No fields to update.",
-            }), { status: 400 });
+            return ERROR_RESPONSE("Invalid Request Body. Required fields: name or imgURL", 400);
         }
 
         const newName = body.name;
@@ -118,11 +105,7 @@ export async function PATCH(request: Request): Promise<Response> {
         const findItem = await Menu.findById(id);
 
         if (!findItem) {
-            return new Response(JSON.stringify({
-                success: false,
-                data: null,
-                error: "Menu not found",
-            }), { status: 404 });
+            return ERROR_RESPONSE("Menu item not found.", 404);
         }
 
         // check if there is an entry with the same name on same timeSlot, and day
@@ -133,11 +116,7 @@ export async function PATCH(request: Request): Promise<Response> {
         });
 
         if (existingEntry) {
-            return new Response(JSON.stringify({
-                success: false,
-                data: null,
-                error: `Menu item with name '${newName}' already exists for ${findItem.day} at ${findItem.timeSlot}.`,
-            }), { status: 400 });
+            return ERROR_RESPONSE(`Menu item with name '${newName}' already exists for ${findItem.day} at ${findItem.timeSlot}.`, 400);
         }
 
         if(newName) findItem.name = newName;
@@ -145,22 +124,21 @@ export async function PATCH(request: Request): Promise<Response> {
 
         await findItem.save();
 
-        return new Response(JSON.stringify({
-            success: true,
-            data: findItem,
-            error: null,
-        }), { status: 200 });
+        return SUCCESS_RESPONSE(findItem, 200);
 
     } catch (error) {
-        return Response.json({
-            success: false,
-            data: null,
-            error: error,
-        }, { status: 500 });
+        return ERROR_RESPONSE(error, 500);
     }
 }
 
 export async function DELETE(request: Request): Promise<Response> {
+
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    if (!auth.success) {
+        return UNAUTHORISED_RESPONSE;
+    }
+
     try {
         await connect();
 
@@ -168,34 +146,18 @@ export async function DELETE(request: Request): Promise<Response> {
         const id = params.get("id");
 
         if (!id) {
-            return Response.json({
-                success: false,
-                data: null,
-                error: "Invalid Request URL",
-            }, { status: 400 });
+            return ERROR_RESPONSE("Invalid Request URL", 400);
         }
 
         const deletedMenu = await Menu.findByIdAndDelete(id);
 
         if (!deletedMenu) {
-            return Response.json({
-                success: false,
-                data: null,
-                error: "Delete failed. Menu not found.",
-            }, { status: 404 });
+            return ERROR_RESPONSE("Menu item not found.", 404);
         }
 
-        return Response.json({
-            success: true,
-            data: deletedMenu,
-            error: null,
-        }, { status: 200 });
+        return SUCCESS_RESPONSE(deletedMenu, 200);
 
     } catch (error) {
-        return Response.json({
-            success: false,
-            data: null,
-            error: error,
-        }, { status: 500 });
+        return ERROR_RESPONSE(error, 500);
     }
 }

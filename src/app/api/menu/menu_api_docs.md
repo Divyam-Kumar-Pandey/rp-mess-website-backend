@@ -7,9 +7,10 @@ Get the menu for the day and time slot. If `day` and `timeSlot` are not provided
 ### Request
 
 - Method: GET
+- Can be accessed by STUDENT, STAFF, ADMIN, SUPER ADMIN
 - URL: `/api/menu`
 - Headers:
-  - Authorization: Bearer `<secret_key>`
+  - Authorization: Bearer `<access_token>`
 - Params:
   - `day` (optional): Accepts values `MONDAY`, `TUESDAY`, `WEDNESDAY`, `THURSDAY`, `FRIDAY`, `SATURDAY`, `SUNDAY`
   - `timeSlot` (optional): Accepts values `BREAKFAST`, `LUNCH`, `SNACKS`, `DINNER`
@@ -74,7 +75,7 @@ Add a new menu item.
 - Method: POST
 - URL: `/api/menu`
 - Headers:
-  - Authorization: Bearer `<secret_key>`
+  - Authorization: Bearer `<access_token>`
 - Body:
   ```json
   {
@@ -113,7 +114,7 @@ Update an existing menu item.
 - Method: PATCH
 - URL: `/api/menu?id=<menu_item_id>`
 - Headers:
-  - Authorization: Bearer `<secret_key>`
+  - Authorization: Bearer `<access_token>`
 - Params:
   - `id`: The ID of the menu item to be updated (required)
 - Body:
@@ -154,7 +155,7 @@ Delete a menu item.
 - Method: DELETE
 - URL: `/api/menu?id=<menu_item_id>`
 - Headers:
-  - Authorization: Bearer `<secret_key>`
+  - Authorization: Bearer `<access_token>`
 - Params:
     - `id`: The ID of the menu item to be deleted (required)
 

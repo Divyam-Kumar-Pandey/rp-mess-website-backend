@@ -1,7 +1,16 @@
+import { ERROR_RESPONSE, SUCCESS_RESPONSE, UNAUTHORISED_RESPONSE } from "@/app/constants";
 import connect from "@/lib/db";
 import HallMember from "@/lib/models/hallMember";
+import { isAuthorizedAsAnyOfThem } from "@/lib/services/auth";
 
 export async function GET(request: Request): Promise<Response> {
+
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    if (!auth.success) { 
+        return UNAUTHORISED_RESPONSE;
+    }
+
     const params = new URL(request.url).searchParams;
     const rollNumber = params.get("rollNumber");
     try {
@@ -10,21 +19,46 @@ export async function GET(request: Request): Promise<Response> {
         if(rollNumber) hallMembers = await HallMember.find({rollNumber});
         else hallMembers = await HallMember.find();
         
-        return Response.json({
-            "success": true,
-            "data": hallMembers,
-            "error": null,
-        });
+        return SUCCESS_RESPONSE(hallMembers, 200);
     } catch (error) {
-        return Response.json({
-            "success": false,
-            "data": null,
-            "error": "Error connecting to MongoDB", 
-        });
+        return ERROR_RESPONSE(error, 500);
     }
 }
 
 export async function POST(request: Request): Promise<Response> {
+
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    if (!auth.success) { 
+        return UNAUTHORISED_RESPONSE;
+    }
+
+    if(request.headers.get("Content-Type") == "application/json") {
+        const body = await request.json();
+        /* Sample Request Body
+        {
+            "rollNumber": "123456789",
+            "role": "STUDENT"
+        }
+        */
+        if(!body.rollNumber || !body.role) {
+            return ERROR_RESPONSE("Invalid Request Body. Required fields: rollNumber, role", 400);
+        }
+
+        try {
+            await connect();
+            const hallMember = new HallMember({rollNumber: body.rollNumber, role: body.role});
+            const existingHallMember = await HallMember.findOne({rollNumber: body.rollNumber});
+            if(existingHallMember) {
+                return ERROR_RESPONSE("Hall Member already exists", 400);
+            }
+            await hallMember.save();
+            return SUCCESS_RESPONSE("Hall Member added successfully", 200);
+        } catch (error) {
+            return ERROR_RESPONSE(error, 500);
+        }
+    }
+
     try {
         await connect();
 
@@ -44,27 +78,15 @@ export async function POST(request: Request): Promise<Response> {
         const file = formData.get("file") as File;
 
         if(!file) {
-            return Response.json({
-                "success": false,
-                "data": null,
-                "error": "Invalid Request Body",
-            });
+            return ERROR_RESPONSE("Invalid Request Body. Required fields: file", 400);
         }
 
 
         // check file extension
         if(!file || file.type !== "text/csv") {
-            return Response.json({
-                "success": false,
-                "data": null,
-                "error": "Invalid File Type. Please upload a CSV file",
-            });
+            return ERROR_RESPONSE("Invalid file type. Required file type: text/csv", 400);
         }
 
-        console.log(file);
-        
-
-        
         const reader = file.stream().getReader();
         let decoder = new TextDecoder();
         let result = await reader.read();
@@ -84,17 +106,9 @@ export async function POST(request: Request): Promise<Response> {
             await hallMember.save();
         }
 
-        return Response.json({
-            "success": true,
-            "data": "Data inserted successfully",
-            "error": null,
-        });
+        return SUCCESS_RESPONSE("Data inserted successfully", 200);
 
     } catch (error) {
-        return Response.json({
-            "success": false,
-            "data": null,
-            "error": error,
-        });
+        return ERROR_RESPONSE(error, 500);
     }
 }

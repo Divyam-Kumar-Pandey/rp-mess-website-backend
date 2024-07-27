@@ -1,19 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
+import { UNAUTHORISED_RESPONSE } from "./app/constants";
 const SECRET = process.env.SECRET;
+
+const allowedPathsForAll = [
+    '/api/user/login',
+    '/api/user/register',
+    '/api/verify-email',
+];
 
 export function middleware(req: NextRequest) {
 
     const token = req.headers.get('Authorization');
-    // console.log(token);
-    if (!token || token !== `Bearer ${SECRET}`) {
-        // redirect to login page
-        // return NextResponse.redirect(new URL('/login', req.url).toString());
-        return new Response('Unauthorized', { status: 401 });
+    const url = req.nextUrl.pathname;
+    if(allowedPathsForAll.includes(url)){
+        return NextResponse.next();
     }
-    console.log(req.url);
+
+    if (!token) {
+        console.log("No token found : from middleware");
+        return UNAUTHORISED_RESPONSE;
+    }
     return NextResponse.next();
 }
 
 export const config = {
     matcher : ["/api/:path*"]
+
 }
