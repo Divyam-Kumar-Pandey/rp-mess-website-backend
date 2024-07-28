@@ -15,8 +15,8 @@ const NoticeBoardSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now,
-        expires: 30
+        default: Date.now(),
+        expires: 60*60*24*180, // 180 days 
     },
 
 });

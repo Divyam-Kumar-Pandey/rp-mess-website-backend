@@ -1,3 +1,5 @@
+import { UNAUTHORISED_RESPONSE } from '@/app/constants';
+import { isAuthorizedAsAnyOfThem } from '@/lib/services/auth';
 import { google } from 'googleapis';
 import { Readable } from 'node:stream';
 // import credentials from './credentials.json'
@@ -44,6 +46,12 @@ async function uploadFile(authClient : any, image: File){
 }
 
 export async function POST(request: Request): Promise<Response> {
+
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    if(!auth.success){
+        return UNAUTHORISED_RESPONSE;
+    }
 
     const formData = await request.formData();
     const image = formData.get('image') as File;
