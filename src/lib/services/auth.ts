@@ -1,4 +1,5 @@
 import User from "@/lib/models/user";
+import connect from "@/lib/db";
 var jwt = require('jsonwebtoken');
 
 function verifyAccessToken(token: string) {
@@ -19,6 +20,8 @@ export async function isAuthorizedAsAnyOfThem(token: string, checkFor: String[])
 
     const result = verifyAccessToken(token);
     if (result.success) {
+      try{
+        await connect();
         const user = await User.findOne({ rollNumber: result.data.rollNumber });
         // user role is an array of strings
         for (let i = 0; i < checkFor.length; i++) {
@@ -26,6 +29,10 @@ export async function isAuthorizedAsAnyOfThem(token: string, checkFor: String[])
                 return { success: true, error: null };
             }
         }
+      }
+      catch(error){
+        return { success: false, error : error };
+      }
 
         return { success: false, error : null };
 

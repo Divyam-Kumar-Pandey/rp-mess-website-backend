@@ -80,3 +80,47 @@ Add a new member or new members (using csv upload) to the mess.
   }
   ```
 
+## Delete Member
+
+Delete a member (or members) from the mess.
+
+### Request
+
+- Method: DELETE
+- Can be accessed by ADMIN and SUPER ADMIN
+- URL: `/api/member`
+- Headers:
+  - Authorization: Bearer `<access_token>`
+- Body:
+  ```json
+  {
+    "rollNumber": "18CE00015"
+  }
+  ```
+  Content-Type: application/json (for single member)
+
+    OR
+  
+  Content-Type: multipart/form-data (for multiple members)
+
+    ```csv
+    rollNumber
+    18CE00015
+    18CE00016
+    18CE00017
+    ```
+    form-data: `file: <csv_file>`
+
+### Response
+
+- Status: 200 OK
+- Body:
+  ```json
+  {
+    "success": true,
+    "data": "Data deleted successfully",
+    "error": null
+  }
+  ```
+
+
