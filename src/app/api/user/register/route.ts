@@ -2,6 +2,7 @@ import { ERROR_RESPONSE } from "@/app/constants";
 import connect from "@/lib/db";
 import HallMember from "@/lib/models/hallMember";
 import User from "@/lib/models/user";
+import TempUser from "@/lib/models/tempUser";
 import generateTokens from "@/lib/services/generateTokens";
 var bcrypt = require('bcrypt');
 
@@ -14,14 +15,13 @@ export async function POST(req: Request) {
         Sample Request Body {
             "rollNumber": "123456",
         "password": "password",
-        "email": "abc@gmail.com",
         "name": "John Doe",
         }
     */
 
    //safety checks
-   if (!userData.rollNumber || !userData.password || !userData.email || !userData.name) {
-       return ERROR_RESPONSE("Invalid Request Body. Required fields: rollNumber, password, email, name", 400);
+   if (!userData.rollNumber || !userData.password || !userData.name) {
+       return ERROR_RESPONSE("Invalid Request Body. Required fields: rollNumber, password, name", 400);
     }
     
     await connect();
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     // check if the user already exists
     const existingUser = await User.findOne({ rollNumber: userData.rollNumber });
-    const existingUserEmail = await User.findOne({ email: userData.email });
+    const existingUserEmail = await User.findOne({ email: user.email });
 
     if (existingUser) {
         return ERROR_RESPONSE("User already exists", 400);
@@ -51,10 +51,10 @@ export async function POST(req: Request) {
 
     let newUser;
     try {
-        newUser = new User({
+        newUser = new TempUser({
             rollNumber: userData.rollNumber,
             password: hashedPassword,
-            email: userData.email,
+            email: user.email,
             name: userData.name,
             role: [currRole],
         });
@@ -68,12 +68,11 @@ export async function POST(req: Request) {
         "success": true,
         "data": {
             "user": {
-                "id": newUser._id,
                 "rollNumber": newUser.rollNumber,
                 "email": newUser.email,
                 "role": newUser.role,
             },
-            'token': generateTokens(newUser.rollNumber),
+            'token': generateTokens(newUser.rollNumber, 'temp'),
         },
         "error": null,
     }, { status: 201 });   

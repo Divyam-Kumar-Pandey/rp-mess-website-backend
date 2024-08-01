@@ -32,19 +32,6 @@ const UserSchema = new Schema({
         required: true,
         unique: true,
     },
-    isEmailVerified: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
-    emailOTP: {
-        type: String,
-        required: false,
-    },
-    emailOTPExpires: {
-        type: Date,
-        required: false,
-    },
     // additional details
     position : {
         type: String,

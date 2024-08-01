@@ -41,7 +41,8 @@ export async function POST(request: Request): Promise<Response> {
         /* Sample Request Body
         {
             "rollNumber": "123456789",
-            "role": "STUDENT"
+            "role": "STUDENT",
+            "email": "abc@gmail.com"
         }
         */
         if(!body.rollNumber || !body.role) {
@@ -50,7 +51,7 @@ export async function POST(request: Request): Promise<Response> {
 
         try {
             await connect();
-            const hallMember = new HallMember({rollNumber: body.rollNumber, role: body.role});
+            const hallMember = new HallMember({rollNumber: body.rollNumber, role: body.role, email: body.email});
             const existingHallMember = await HallMember.findOne({rollNumber: body.rollNumber});
             if(existingHallMember) {
                 return ERROR_RESPONSE("Hall Member already exists", 400);
@@ -68,10 +69,10 @@ export async function POST(request: Request): Promise<Response> {
         /* 
         we will upload a csv file with 'rollNumber', and 'role' columns and then we will parse the csv file and insert the data into the database
         format of csv file:
-        rollNumber,role
-        123456789,STUDENT
-        123467890,STAFF
-        123478901,ADMIN
+        rollNumber,role,email
+        123456789,STUDENT,abc@gmail.com
+        123467890,STAFF,abc@gmail.com
+        123478901,ADMIN,abc@gmail.com
         ...
 
         formData.append("file", file);
@@ -100,8 +101,9 @@ export async function POST(request: Request): Promise<Response> {
             let line = lines[i].split(",");
             let rollNumber = line[0];
             let role = line[1];
+            let email = line[2];
             if(!rollNumber || !role) continue;
-            const hallMember = new HallMember({rollNumber, role});
+            const hallMember = new HallMember({rollNumber, role, email});
             // check if the rollNumber already exists in the database
             const existingHallMember = await HallMember.findOne
             ({rollNumber});

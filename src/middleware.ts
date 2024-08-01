@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { UNAUTHORISED_RESPONSE } from "./app/constants";
-const SECRET = process.env.SECRET;
 
 const allowedPathsForAll = [
     '/api/user/login',
     '/api/user/register',
-    '/api/verify-email',
 ];
 
 export function middleware(req: NextRequest) {

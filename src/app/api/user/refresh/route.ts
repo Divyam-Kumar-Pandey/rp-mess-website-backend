@@ -28,6 +28,6 @@ export async function POST(req: Request): Promise<Response> {
         'user': {
             'rollNumber' : decoded.rollNumber,
         },
-        'token': generateTokens(decoded.rollNumber)
+        'token': generateTokens(decoded.rollNumber, 'access-only')
     }, 200);
 }

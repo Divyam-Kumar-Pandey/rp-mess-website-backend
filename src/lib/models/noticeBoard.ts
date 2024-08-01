@@ -15,12 +15,12 @@ const NoticeBoardSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now(),
+        default: Date.now,
         expires: 60*60*24*180, // 180 days 
     },
 
 });
 
-const NoticeBoard = mongoose.models.Notification || mongoose.model('Notification', NoticeBoardSchema);
+const NoticeBoard = mongoose.models.NoticeBoard || mongoose.model('NoticeBoard', NoticeBoardSchema);
 
 export default NoticeBoard;
