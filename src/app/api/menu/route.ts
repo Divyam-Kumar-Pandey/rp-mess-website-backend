@@ -25,7 +25,7 @@ export async function GET(request: Request): Promise<Response> {
             filteredMenu.sort((a, b) => b.createdAt - a.createdAt);
             return SUCCESS_RESPONSE(filteredMenu, 200);
         }
-
+        menu.sort((a, b) => b.createdAt - a.createdAt);
         return SUCCESS_RESPONSE(menu, 200);
     } catch (error) {
         return ERROR_RESPONSE(error, 500);
