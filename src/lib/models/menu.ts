@@ -19,7 +19,10 @@ const MenuSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 const Menu = mongoose.models.Menu || mongoose.model('Menu', MenuSchema);

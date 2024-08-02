@@ -21,6 +21,8 @@ export async function GET(request: Request): Promise<Response> {
             let filteredMenu = menu;
             if(day) filteredMenu = filteredMenu.filter((item) => item.day === day);
             if(timeSlot) filteredMenu = filteredMenu.filter((item) => item.timeSlot === timeSlot);
+            // sort in descending order of createdAt
+            filteredMenu.sort((a, b) => b.createdAt - a.createdAt);
             return SUCCESS_RESPONSE(filteredMenu, 200);
         }
 
