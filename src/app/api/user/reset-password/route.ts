@@ -20,14 +20,14 @@ export async function POST(req: Request) {
 
   //safety checks
   if (!userData.rollNumber || !userData.newPassword) {
-    return ERROR_RESPONSE("Invalid Request Body. Required fields: rollNumber, newPassword", 400);
+    return ERROR_RESPONSE("Invalid Request Body.", 400);
   }
 
   try {
     await connect();
     const user = await User.findOne({rollNumber: userData.rollNumber});
     if (!user) {
-      return ERROR_RESPONSE("User does not exist", 400);
+      return ERROR_RESPONSE("User does not exist", 404);
     }
 
     // hash the password

@@ -2,7 +2,7 @@ import TempUser from "@/lib/models/tempUser";
 import {verifyTempToken} from "@/lib/services/auth";
 import User from "@/lib/models/user";
 import connect from "@/lib/db";
-import {ERROR_RESPONSE, SUCCESS_RESPONSE} from "@/app/constants";
+import {ERROR_RESPONSE, SUCCESS_RESPONSE, UNAUTHORISED_RESPONSE} from "@/app/constants";
 
 export async function POST(request: Request): Promise<Response> {
   /* 
@@ -18,13 +18,11 @@ export async function POST(request: Request): Promise<Response> {
 
   // check if the token is valid
   let decoded = verifyTempToken(token).data;
-  if (!decoded) {
-    return ERROR_RESPONSE("Unauthorized", 401);
-  }
+  if (!decoded) { return UNAUTHORISED_RESPONSE; }
 
   //safety checks
   if (!body.otp) {
-    return ERROR_RESPONSE("Invalid Request Body. Required fields: otp", 400);
+    return ERROR_RESPONSE("Invalid Request Body.", 400);
   }
 
   // check if the otp is valid

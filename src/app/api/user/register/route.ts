@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     
     /* 
         Sample Request Body {
-            "rollNumber": "123456",
+        "rollNumber": "123456",
         "password": "password",
         "name": "John Doe",
         }
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
    //safety checks
    if (!userData.rollNumber || !userData.password || !userData.name) {
-       return ERROR_RESPONSE("Invalid Request Body. Required fields: rollNumber, password, name", 400);
+       return ERROR_RESPONSE("Invalid Request Body.", 400);
     }
     
     await connect();
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const existingUser = await User.findOne({ rollNumber: userData.rollNumber });
 
     if (existingUser) {
-        return ERROR_RESPONSE("User already exists", 409);
+        return ERROR_RESPONSE("User already exists", 200);
     }
 
     // hash the password

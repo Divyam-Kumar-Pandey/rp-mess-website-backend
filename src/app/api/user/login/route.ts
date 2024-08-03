@@ -1,3 +1,4 @@
+import { ERROR_RESPONSE } from "@/app/constants";
 import connect from "@/lib/db";
 import User from "@/lib/models/user";
 import generateTokens from "@/lib/services/generateTokens";
@@ -15,32 +16,20 @@ export async function POST(req: Request) {
 
     //safety checks
     if (!userData.rollNumber || !userData.password) {
-        return Response.json({
-            "success": false,
-            "data": null,
-            "error": "Invalid Request Body. Required fields: rollNumber, password",
-        });
+        return ERROR_RESPONSE("Invalid Request Body.", 400);
     }
 
     await connect();
     const user = await User.findOne({ rollNumber: userData.rollNumber });
 
     if (!user) {
-        return Response.json({
-            "success": false,
-            "data": null,
-            "error": "User does not exist",
-        });
+        return ERROR_RESPONSE("User does not exist", 404);
     }
 
     const passwordMatch = await bcrypt.compare(userData.password, user.password);
 
     if (!passwordMatch) {
-        return Response.json({
-            "success": false,
-            "data": null,
-            "error": "Invalid Password",
-        });
+        return ERROR_RESPONSE("Invalid Password", 401);
     }
 
     return Response.json({

@@ -19,5 +19,33 @@ export async function GET(request: Request) {
     catch(error){
         return ERROR_RESPONSE(error, 500);
     }
+}
 
+export async function POST(request: Request) {
+    const token = request.headers.get('Authorization')?.split(' ')[1];
+    if (!token) { return ERROR_RESPONSE('Unauthorized', 401); }
+    const auth = await isAuthorizedAsAnyOfThem(token, ['ADMIN', 'SUPERADMIN']);
+
+    /* 
+        Sample request body:
+        {
+            "rollNumber": "18BCE0001", (required)
+            "role": ["STUDENT", "STAFF", "ADMIN", "SUPERADMIN"] (required)
+        }
+    */
+
+    const { rollNumber, role } = await request.json();
+    try{
+        await connect();
+        const user = await User.findOne({ rollNumber: rollNumber });
+        if(!user){
+            return ERROR_RESPONSE('User not found', 404);
+        }
+        user.role = role;
+        await user.save();
+        return SUCCESS_RESPONSE('Role updated successfully', 200);
+    }
+    catch(error){
+        return ERROR_RESPONSE(error, 500);
+    }
 }
