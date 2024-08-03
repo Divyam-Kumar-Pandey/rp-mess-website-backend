@@ -26,12 +26,12 @@ export async function POST(req: Request) {
     
     await connect();
     const user = await HallMember.findOne({ rollNumber: userData.rollNumber });
-    const currRole : String = user.role; // this will be a single string value
-    const canCreateAccount = user !== null;
 
-    if (!canCreateAccount) {
+    
+    if (!user) {
         return ERROR_RESPONSE("User does not exist", 404);
     }
+    const currRole : String = user.role; // this will be a single string value
 
     // check if the user already exists
     const existingUser = await User.findOne({ rollNumber: userData.rollNumber });
