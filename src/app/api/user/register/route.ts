@@ -30,24 +30,22 @@ export async function POST(req: Request) {
     const canCreateAccount = user !== null;
 
     if (!canCreateAccount) {
-        return ERROR_RESPONSE("User does not exist", 400);
+        return ERROR_RESPONSE("User does not exist", 404);
     }
 
     // check if the user already exists
     const existingUser = await User.findOne({ rollNumber: userData.rollNumber });
-    const existingUserEmail = await User.findOne({ email: user.email });
 
     if (existingUser) {
-        return ERROR_RESPONSE("User already exists", 400);
-    }
-
-    if (existingUserEmail) {
-        return ERROR_RESPONSE("Email already exists", 400);
+        return ERROR_RESPONSE("User already exists", 409);
     }
 
     // hash the password
     const salt = await bcrypt.genSalt(5);
     const hashedPassword = await bcrypt.hash(userData.password, salt);
+
+    // check if the user is already registered and delete the previous entry
+    await TempUser.deleteOne({ rollNumber: userData.rollNumber });
 
     let newUser;
     try {

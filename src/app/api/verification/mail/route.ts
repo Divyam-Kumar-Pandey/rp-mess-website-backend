@@ -5,37 +5,7 @@ import TempUser from "@/lib/models/tempUser";
 import { verifyTempToken } from "@/lib/services/auth";
 var nodemailer = require('nodemailer');
 
-
 export async function GET(request: Request): Promise<Response> {
-    const token = request.headers.get("Authorization")?.split(" ")[1];
-    if (!token) { return ERROR_RESPONSE("Unauthorized", 401); }
-
-    // check if the token is valid
-    let decoded = verifyTempToken(token).data;
-    if (!decoded) { return ERROR_RESPONSE("Unauthorized", 401); }
-
-    try {
-        await connect();
-        const user = await TempUser.findOne({ rollNumber: decoded.rollNumber });
-        return SUCCESS_RESPONSE({
-            'rollNumber': user.rollNumber,
-            'email': user.email,
-            'name': user.name,
-        }, 200);
-      } catch (error) {
-        return ERROR_RESPONSE(error, 500);
-      }
-
-}
-
-export async function POST(request: Request): Promise<Response> {
-    /* 
-        Sample Request Body {
-            "rollNumber": "123456",
-            "email": "dfsfsd@gmai.com",
-        }
-    */
-    const body = await request.json();
 
     const token = request.headers.get("Authorization")?.split(" ")[1];
     if (!token) { return UNAUTHORISED_RESPONSE; }
@@ -44,19 +14,15 @@ export async function POST(request: Request): Promise<Response> {
     let decoded = verifyTempToken(token).data;
     if (!decoded) { return UNAUTHORISED_RESPONSE; }
 
-    //safety checks
-    if (!body.email || !body.rollNumber) {
-        return ERROR_RESPONSE("Invalid Request Body. Required fields: email, rollNumber", 400);
-    }
     
     // send verification email
-    const email = body.email;
     const verificationCode = Math.floor(100000 + Math.random() * 900000);
-
+    
     await connect();
-
+    
     // save verification code in db (in temp user)
     const user = await TempUser.findOne({ rollNumber: decoded.rollNumber });
+    const email = user.email;
     user.emailOTP = verificationCode;
     await user.save();
 

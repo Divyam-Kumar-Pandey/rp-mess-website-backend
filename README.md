@@ -1,13 +1,5 @@
 API Docs:
-
-- [Menu](./src/app/api/menu/menu_api_docs.md)
-- [Noticeboard](./src/app/api/noticeboard/noticeboard_api_docs.md)
-- [Register](./src/app/api/user/register/register_api_docs.md)
-- [Login](./src/app/api/user/login/login_api_docs.md)
-- [Refresh](./src/app/api/user/refresh/refresh_api_docs.md)
-- [Member](./src/app/api/member/member_api_docs.md)
-- [Image](./src/app/api/image/image_api_docs.md)
-- [Reset Password](./src/app/api/user/reset-password/reset_password_api_docs.md)
+- [API Docs](https://rp-mess-api-docs.vercel.app/)
 
 
 Roles and Permissions:

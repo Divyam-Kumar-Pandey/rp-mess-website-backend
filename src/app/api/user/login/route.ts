@@ -50,12 +50,6 @@ export async function POST(req: Request) {
                 'rollNumber': user.rollNumber,
                 'name': user.name,
                 'email': user.email,
-                'isEmailVerified': user.isEmailVerified,
-                'position': user.position,
-                'roomNumber': user.roomNumber,
-                'profilePicture': user.profilePicture,
-                'graduationYear': user.graduationYear,
-                'isProfileComplete': user.isProfileComplete,
             },
             'token' : generateTokens(user.rollNumber),
 

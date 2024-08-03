@@ -1,21 +1,16 @@
 import User from "@/lib/models/user";
 import connect from "@/lib/db";
 import { ERROR_RESPONSE, SUCCESS_RESPONSE } from "@/app/constants";
-var jwt = require('jsonwebtoken');
+import { isAuthorizedAsAnyOfThem } from "@/lib/services/auth";
 
 export async function GET(request: Request) {
     const token = request.headers.get('Authorization')?.split(' ')[1];
-    const secret = process.env.SECRET;
-    let decoded;
-    try {
-        decoded = jwt.verify(token, secret);
-    } catch (error) {
-        return ERROR_RESPONSE('Unauthorized', 401);
-    }
+    if (!token) { return ERROR_RESPONSE('Unauthorized', 401); }
+    const auth = await isAuthorizedAsAnyOfThem(token, ['STUDENT', 'STAFF', 'ADMIN', 'SUPERADMIN']);
 
     try{
         await connect();
-        const user = await User.findOne({ rollNumber: decoded.rollNumber });
+        const user = await User.findOne({ rollNumber: auth.data });
         if(!user){
             return ERROR_RESPONSE('User not found', 404);
         }

@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <>
-    <div key="string"></div>
+    Please visit this website for documentation: <a href="https://rp-mess-api-docs.vercel.app/">https://rp-mess-api-docs.vercel.app/</a>
     </>
   );
 }

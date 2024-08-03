@@ -12,8 +12,8 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     const params = new URL(request.url).searchParams;
-    const day = params.get("day");
-    const timeSlot = params.get("timeSlot");
+    const day = params.get("day")?.toUpperCase();
+    const timeSlot = params.get("timeSlot")?.toUpperCase();
     try {
         await connect();
         const menu = await Menu.find();
