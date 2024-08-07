@@ -10,6 +10,7 @@ export function middleware(req: NextRequest) {
 
     const token = req.headers.get('Authorization');
     const url = req.nextUrl.pathname;
+    console.log(url)
     if(allowedPathsForAll.includes(url)){
         return NextResponse.next();
     }

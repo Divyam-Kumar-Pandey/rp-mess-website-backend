@@ -31,7 +31,7 @@ export async function GET(request: Request): Promise<Response> {
   // send email
 
   var transporter = nodemailer.createTransport({
-    service: "gmail",
+    // service: "gmail",
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
@@ -61,18 +61,18 @@ export async function GET(request: Request): Promise<Response> {
     html: verificationMail(verificationCode)
   };
 
-  await new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     // send mail
     transporter.sendMail(mailOptions, (err: any, info: any) => {
       if (err) {
         console.error(err);
-        reject(err);
+        // reject(err);
+        resolve(ERROR_RESPONSE("Error sending email", 500));
       } else {
         console.log("Email sent: " + info.response);
-        resolve(info);
+        resolve(SUCCESS_RESPONSE("Email sent successfully", 200));
       }
     });
   });
 
-  return SUCCESS_RESPONSE("Email sent successfully", 200);
 }
