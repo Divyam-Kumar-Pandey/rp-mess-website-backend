@@ -19,6 +19,16 @@ const MenuSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    foodType: {
+        type: String,
+        required: false,
+        enum: ['VEG', 'NON-VEG'],
+    },
+    category: {
+        type: String,
+        required: false,
+        enum: ['MAIN_COURSE', 'COMMON'],
+    },
     createdAt: {
         type: Date,
         default: Date.now,

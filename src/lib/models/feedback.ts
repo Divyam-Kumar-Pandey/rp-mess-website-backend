@@ -21,6 +21,12 @@ const FeedbackSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    status: {
+        type: String,
+        required: true,
+        enum: ['NOT_STARTED','PENDING', 'RESOLVED'],
+        default: 'NOT_STARTED',
+    },
     createdAt: {
         type: Date,
         default: Date.now,

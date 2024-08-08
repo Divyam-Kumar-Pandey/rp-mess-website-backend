@@ -16,6 +16,7 @@ export async function GET(req: Request): Promise<Response> {
             return {
                 id: feedback._id,
                 rollNumber: feedback.rollNumber,
+                name: feedback.name,
                 subject: feedback.subject,
                 body: feedback.body,
                 imgUrl: feedback.imgUrl,

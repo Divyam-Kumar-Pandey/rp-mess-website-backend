@@ -12,15 +12,23 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     const params = new URL(request.url).searchParams;
+    // Enum: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
     const day = params.get("day")?.toUpperCase();
+    // Enum: ['BREAKFAST', 'LUNCH', 'SNACKS', 'DINNER']
     const timeSlot = params.get("timeSlot")?.toUpperCase();
+    // Enum: ['VEG', 'NON-VEG']
+    const foodType = params.get("foodType")?.toUpperCase();
+    // Enum: ['MAIN_COURSE', 'COMMON']
+    const category = params.get("category")?.toUpperCase();
     try {
         await connect();
         const menu = await Menu.find();
-        if (day || timeSlot) {
+        if (day || timeSlot || foodType || category) {
             let filteredMenu = menu;
             if(day) filteredMenu = filteredMenu.filter((item) => item.day === day);
             if(timeSlot) filteredMenu = filteredMenu.filter((item) => item.timeSlot === timeSlot);
+            if(foodType) filteredMenu = filteredMenu.filter((item) => item.foodType === foodType);
+            if(category) filteredMenu = filteredMenu.filter((item) => item.category === category);
             // sort in descending order of createdAt
             filteredMenu.sort((a, b) => b.createdAt - a.createdAt);
             return SUCCESS_RESPONSE(filteredMenu, 200);
