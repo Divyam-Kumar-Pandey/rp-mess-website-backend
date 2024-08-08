@@ -48,7 +48,7 @@ async function uploadFile(authClient : any, image: File){
 export async function POST(request: Request): Promise<Response> {
 
     const token = request.headers.get("Authorization")?.split(" ")[1];
-    const auth = await isAuthorizedAsAnyOfThem(token!, ["ADMIN", "SUPERADMIN"]);
+    const auth = await isAuthorizedAsAnyOfThem(token!, ["STUDENT","STAFF", "ADMIN", "SUPERADMIN"]);
     if(!auth.success){
         return UNAUTHORISED_RESPONSE;
     }
