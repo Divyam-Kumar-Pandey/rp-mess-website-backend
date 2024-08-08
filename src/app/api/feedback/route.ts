@@ -2,6 +2,7 @@ import Feedback from "@/lib/models/feedback";
 import connect from "@/lib/db";
 import { ERROR_RESPONSE, SUCCESS_RESPONSE, UNAUTHORISED_RESPONSE } from "@/app/constants";
 import { isAuthorizedAsAnyOfThem } from "@/lib/services/auth";
+import User from "@/lib/models/user";
 
 export async function GET(req: Request): Promise<Response> {
     const token = req.headers.get("Authorization")?.split(" ")[1];
@@ -47,8 +48,10 @@ export async function POST(req: Request): Promise<Response> {
 
     try{
         await connect();
+        const name = (await User.findOne({rollNumber: auth.data})).name;
         const feedback = new Feedback({
             rollNumber: auth.data,
+            name: name,
             subject: feedbackData.subject,
             body: feedbackData.body,
             imgUrl: feedbackData.imgUrl,

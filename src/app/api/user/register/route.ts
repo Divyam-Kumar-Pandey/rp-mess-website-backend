@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const existingUser = await User.findOne({ rollNumber: userData.rollNumber });
 
     if (existingUser) {
-        return ERROR_RESPONSE("User already exists", 200);
+        return ERROR_RESPONSE("User already exists", 409);
     }
 
     // hash the password
