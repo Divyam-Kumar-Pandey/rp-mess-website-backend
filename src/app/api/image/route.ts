@@ -12,7 +12,7 @@ async function authorize(){
         process.env.GOOGLE_CLIENT_EMAIL,
         undefined,
         // credentials.private_key,
-        process.env.GOOGLE_PRIVATE_KEY,
+        process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/gm, '\n'),
         SCOPE
     );
     await jwtClient.authorize();
