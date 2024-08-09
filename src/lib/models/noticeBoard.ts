@@ -5,7 +5,7 @@ const NoticeBoardSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    imgURL: {
+    imgUrl: {
         type: String,
         required: false,
     },

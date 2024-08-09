@@ -39,7 +39,7 @@ export async function POST(request: Request): Promise<Response> {
     {
         "title": "New Notification",
         "body": "This is a new notification",
-        "imgURL": "https://www.google.com", // Optional
+        "imgUrl": "https://www.google.com", // Optional
     }
     */
     if(!body.title || !body.body) {
@@ -47,7 +47,7 @@ export async function POST(request: Request): Promise<Response> {
     }
     try {
         await connect();
-        const notification = new NoticeBoard({title: body.title, body: body.body, imgURL: (body.imgURL)??''});
+        const notification = new NoticeBoard({title: body.title, body: body.body, imgUrl: (body.imgUrl)??''});
         await notification.save();
         return SUCCESS_RESPONSE("Notification added successfully", 200);
     } catch (error) {
