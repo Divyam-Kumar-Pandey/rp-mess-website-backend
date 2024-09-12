@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     const { rollNumber, role } = await request.json();
     try{
         await connect();
-        const user = await User.findOne({ rollNumber: rollNumber });
+        const user = await User.findOne({ rollNumber: rollNumber.toUpperCase() });
         if(!user){
             return ERROR_RESPONSE('User not found', 404);
         }

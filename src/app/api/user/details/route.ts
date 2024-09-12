@@ -52,7 +52,6 @@ export async function PATCH(req: Request) {
     /*
         Sample request body:
         {
-            "rollNumber": "18BCE0001", (required)
             "name": "John Doe", (optional)
             "email": "abc@gmail.com", (optional)
             "position": "Student", (optional)
@@ -63,7 +62,7 @@ export async function PATCH(req: Request) {
         }
     */
 
-    // CSV upload format
+    // CSV upload format (for bulk update) (not implemented)
     /* 
         rollNumber,name,email,position,roomNumber,profilePicture,graduationYear,isProfileComplete,role
         18BCE0001,John Doe,abc@gmail.com,Student,A-101,https://example.com/profile.jpg,2022,true
@@ -78,7 +77,7 @@ export async function PATCH(req: Request) {
     }
 
     const params = new URL(req.url).searchParams;
-    const rollNumber = params.get("rollNumber");
+    const rollNumber = params.get("rollNumber")?.toUpperCase();
 
     const user = await User.findOne({rollNumber: rollNumber});
 

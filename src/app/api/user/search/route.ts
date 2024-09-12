@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     }
 
     const params = new URL(req.url).searchParams;
-    const rollNumber = params.get("rollNumber");
+    const rollNumber = params.get("rollNumber")?.toUpperCase();
 
     if(!rollNumber) { return ERROR_RESPONSE("Error: \"rollNumber\" not provided", 400); }
 

@@ -51,7 +51,11 @@ export async function POST(request: Request): Promise<Response> {
 
         try {
             await connect();
-            const hallMember = new HallMember({rollNumber: body.rollNumber, role: body.role, email: body.email});
+            const hallMember = new HallMember({
+                rollNumber: body.rollNumber.toUpperCase(), 
+                role: body.role.toUpperCase(), 
+                email: body.email
+            });
             const existingHallMember = await HallMember.findOne({rollNumber: body.rollNumber});
             if(existingHallMember) {
                 return ERROR_RESPONSE("Hall Member already exists", 400);
@@ -99,8 +103,8 @@ export async function POST(request: Request): Promise<Response> {
         
         for(let i = 1; i < lines.length; i++) {
             let line = lines[i].split(",");
-            let rollNumber = line[0];
-            let role = line[1];
+            let rollNumber = line[0].toUpperCase();
+            let role = line[1].toUpperCase();
             let email = line[2];
             if(!rollNumber || !role) continue;
             const hallMember = new HallMember({rollNumber, role, email});
@@ -138,7 +142,7 @@ export async function DELETE(request: Request) {
 
         try {
             await connect();
-            const hallMember = await HallMember.findOne({rollNumber: body.rollNumber});
+            const hallMember = await HallMember.findOne({rollNumber: body.rollNumber.toUpperCase()});
             if(!hallMember) {
                 return ERROR_RESPONSE("Hall Member not found", 400);
             }
@@ -171,7 +175,7 @@ export async function DELETE(request: Request) {
             await connect();
             for(let i = 1; i < lines.length; i++) {
                 let line = lines[i].split(",");
-                let rollNumber = line[0];
+                let rollNumber = line[0].toUpperCase();
                 // console.log(rollNumber);
                 if(!rollNumber) continue;
                 const hallMember = await HallMember.deleteOne({ rollNumber });

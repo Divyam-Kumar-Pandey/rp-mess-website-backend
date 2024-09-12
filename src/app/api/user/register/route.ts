@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     }
     
     await connect();
-    const user = await HallMember.findOne({ rollNumber: userData.rollNumber });
+    const user = await HallMember.findOne({ rollNumber: userData.rollNumber.toUpperCase() });
 
     
     if (!user) {
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const currRole : String = user.role; // this will be a single string value
 
     // check if the user already exists
-    const existingUser = await User.findOne({ rollNumber: userData.rollNumber });
+    const existingUser = await User.findOne({ rollNumber: userData.rollNumber.toUpperCase() });
 
     if (existingUser) {
         return ERROR_RESPONSE("User already exists", 409);
@@ -45,12 +45,12 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(userData.password, salt);
 
     // check if the user is already registered and delete the previous entry
-    await TempUser.deleteOne({ rollNumber: userData.rollNumber });
+    await TempUser.deleteOne({ rollNumber: userData.rollNumber.toUpperCase() });
 
     let newUser;
     try {
         newUser = new TempUser({
-            rollNumber: userData.rollNumber,
+            rollNumber: userData.rollNumber.toUpperCase(),
             password: hashedPassword,
             email: user.email,
             name: userData.name,
