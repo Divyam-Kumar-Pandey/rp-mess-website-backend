@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     }
 
     await connect();
-    const user = await User.findOne({ rollNumber: userData.rollNumber.toUpperCase() });
+    const user = await User.findOne({ rollNumber: userData.rollNumber.toUpperCase().trim() });
 
     if (!user) {
         return ERROR_RESPONSE("User does not exist", 404);

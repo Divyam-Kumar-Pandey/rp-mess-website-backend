@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     }
     
     await connect();
-    const user = await HallMember.findOne({ rollNumber: userData.rollNumber.toUpperCase() });
+    const user = await HallMember.findOne({ rollNumber: userData.rollNumber.toUpperCase().trim() });
 
     
     if (!user) {
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const currRole : String = user.role; // this will be a single string value
 
     // check if the user already exists
-    const existingUser = await User.findOne({ rollNumber: userData.rollNumber.toUpperCase() });
+    const existingUser = await User.findOne({ rollNumber: userData.rollNumber.toUpperCase().trim() });
 
     if (existingUser) {
         return ERROR_RESPONSE("User already exists", 409);

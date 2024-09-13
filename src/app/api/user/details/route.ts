@@ -77,7 +77,7 @@ export async function PATCH(req: Request) {
     }
 
     const params = new URL(req.url).searchParams;
-    const rollNumber = params.get("rollNumber")?.toUpperCase();
+    const rollNumber = params.get("rollNumber")?.toUpperCase().trim();
 
     const user = await User.findOne({rollNumber: rollNumber});
 

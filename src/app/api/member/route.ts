@@ -12,7 +12,7 @@ export async function GET(request: Request): Promise<Response> {
     }
 
     const params = new URL(request.url).searchParams;
-    const rollNumber = params.get("rollNumber")?.toUpperCase()
+    const rollNumber = params.get("rollNumber")?.toUpperCase().trim();
     try {
         await connect();
         let hallMembers;
