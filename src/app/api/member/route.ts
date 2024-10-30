@@ -95,6 +95,8 @@ export async function POST(request: Request): Promise<Response> {
             return ERROR_RESPONSE("Invalid file type. Required file type: text/csv", 400);
         }
 
+        console.log(file);
+
         const reader = file.stream().getReader();
         let decoder = new TextDecoder();
         let result = await reader.read();
@@ -103,9 +105,10 @@ export async function POST(request: Request): Promise<Response> {
         
         for(let i = 1; i < lines.length; i++) {
             let line = lines[i].split(",");
-            let rollNumber = line[0].toUpperCase();
-            let role = line[1].toUpperCase();
+            let rollNumber = line[0]?.toUpperCase();
+            let role = line[1]?.toUpperCase();
             let email = line[2];
+            console.log(rollNumber, role, email);
             if(!rollNumber || !role) continue;
             const hallMember = new HallMember({rollNumber, role, email});
             // check if the rollNumber already exists in the database
@@ -118,6 +121,7 @@ export async function POST(request: Request): Promise<Response> {
         return SUCCESS_RESPONSE("Data inserted successfully", 200);
 
     } catch (error) {
+        console.log(error);
         return ERROR_RESPONSE(error, 500);
     }
 }
