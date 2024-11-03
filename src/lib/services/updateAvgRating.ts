@@ -22,6 +22,11 @@ export default async function updateAvgRating() {
         }
     }
 
+    // delete all the avgRating objects from the database
+    await AvgRating.deleteMany();
+
     // insert all the avgRating objects into the database
     await AvgRating.insertMany(avgRatings);
+
+
 }
