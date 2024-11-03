@@ -2,6 +2,7 @@ import Rating from "@/lib/models/rating";
 import connect from "@/lib/db";
 import {ERROR_RESPONSE, SUCCESS_RESPONSE, UNAUTHORISED_RESPONSE} from "@/app/constants";
 import {isAuthorizedAsAnyOfThem} from "@/lib/services/auth";
+import updateAvgRating from "@/lib/services/updateAvgRating";
 
 export async function GET(request: Request) {
   const token = request.headers.get("Authorization")?.split(" ")[1];
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
         Sample request body:
         [
             {
-                "rating": 3,          // rating should be between 1 and 5
+                "rating": 3,          // rating should be between 0 and 5
                 "timeSlot": "LUNCH",  // timeSlot should be one of BREAKFAST, LUNCH, SNACKS, DINNER
                 "date": "04-08-2024" // date should be in dd-mm-yyyy format
             },
@@ -76,8 +77,6 @@ export async function POST(request: Request) {
   }
 
 
-
-
   try {
     await connect();
     for (const rating of ratings) {
@@ -94,6 +93,9 @@ export async function POST(request: Request) {
 
       await newRating.save();
     }
+
+    // update the avgRating collection
+    await updateAvgRating();
 
     return SUCCESS_RESPONSE({message: "Ratings added successfully"}, 200);
   } catch (error) {
